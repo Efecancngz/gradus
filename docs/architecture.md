@@ -53,3 +53,23 @@ the loss all the way back to the original leaf tensors.
   construction decorrelates layers while keeping every run fully
   reproducible. Diagnosed by tracing the per-epoch loss curve (flat after
   ~60 epochs) rather than guessing at hyperparameters.
+- **Fused `softmax_cross_entropy_loss`, not composed from a separate
+  `softmax()` + `log()`.** The combined gradient (`softmax(x) - one_hot`)
+  is what every production framework computes directly — deriving it as
+  a composition would need a full softmax Jacobian, which is both slower
+  and numerically messier for no benefit. Implemented with the
+  log-sum-exp trick (subtract the max logit before exponentiating) so
+  `exp()` never overflows a `double`.
+- **`MLP::activate_output` flag, default `true`.** v1's XOR network needed
+  every layer (including the last) tanh-bounded; MNIST classification
+  needs raw logits at the output for `softmax_cross_entropy_loss`. A flag
+  serves both without duplicating `MLP`; the default preserves v1's exact
+  existing behavior.
+- **MNIST loaded from a CSV mirror, not the original IDX binary format.**
+  Parsing IDX would be a file-format exercise orthogonal to this project's
+  actual point (autograd internals) — a deliberate build-vs-buy call.
+  Source verified live before use: `data.pjreddie.com/files/mnist_{train,test}.csv`.
+- **Measured result (v2):** 89.5% test accuracy (8950/10000) after 5
+  epochs on the full 60k-image training set, ~43s/epoch in a Release
+  build on this machine — a real, run-once-and-confirmed number, not an
+  estimate.

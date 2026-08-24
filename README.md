@@ -24,6 +24,19 @@ ctest --test-dir build --output-on-failure
 ./build/xor_example
 ```
 
+## MNIST example
+Trains the same from-scratch engine on the full MNIST dataset (60k train /
+10k test, real handwritten digits) using a fused softmax + cross-entropy
+loss. Measured result on this repo: **89.5% test accuracy** after 5 epochs
+(~43s/epoch in a Release build).
+
+```bash
+bash scripts/download_mnist.sh
+cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release
+cmake --build build-release --parallel
+./build-release/mnist_example
+```
+
 ## Documentation
 - [Architecture](docs/architecture.md)
 
