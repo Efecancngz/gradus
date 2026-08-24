@@ -246,4 +246,24 @@ Tensor Tensor::relu() const {
     return Tensor(out_impl);
 }
 
+Tensor Tensor::sum() const {
+    double total = 0.0;
+    for (double v : impl->data) {
+        total += v;
+    }
+
+    auto out_impl = std::make_shared<TensorImpl>(std::vector<double>{total}, std::vector<size_t>{1});
+    out_impl->parents = {impl};
+
+    auto input = impl;
+    TensorImpl* out_raw = out_impl.get();
+    out_impl->backward_fn = [input, out_raw]() {
+        for (size_t i = 0; i < input->data.size(); ++i) {
+            input->grad[i] += out_raw->grad[0];
+        }
+    };
+
+    return Tensor(out_impl);
+}
+
 }  // namespace gradus

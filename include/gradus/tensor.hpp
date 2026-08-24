@@ -40,6 +40,7 @@ public:
     Tensor matmul(const Tensor& other) const;
     Tensor tanh() const;
     Tensor relu() const;
+    Tensor sum() const;
 };
 
 }  // namespace gradus

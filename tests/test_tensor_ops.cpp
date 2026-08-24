@@ -160,3 +160,19 @@ TEST_CASE("relu backward matches numerical gradient at a positive input") {
 
     REQUIRE(a.grad()[0] == Catch::Approx(numgrad[0]).epsilon(1e-4));
 }
+
+TEST_CASE("sum forward adds all elements") {
+    Tensor a({1.0, 2.0, 3.0, 4.0}, {4});
+    Tensor b = a.sum();
+    REQUIRE(b.item() == Catch::Approx(10.0));
+}
+
+TEST_CASE("sum backward broadcasts gradient 1.0 to every element") {
+    Tensor a({1.0, 2.0, 3.0}, {3});
+    Tensor b = a.sum();
+    b.backward();
+
+    REQUIRE(a.grad()[0] == Catch::Approx(1.0));
+    REQUIRE(a.grad()[1] == Catch::Approx(1.0));
+    REQUIRE(a.grad()[2] == Catch::Approx(1.0));
+}
