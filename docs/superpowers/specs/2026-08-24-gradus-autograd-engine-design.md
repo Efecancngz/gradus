@@ -5,8 +5,7 @@ Status: Approved (brainstorming), pending implementation plan
 
 ## 1. Problem Definition
 
-Not a business problem — this is a portfolio/learning project (exception under
-standard §0.4). The gap it closes: existing projects (Jobera, testcrafter,
+Not a business problem — this is a portfolio/learning project. The gap it closes: existing projects (Jobera, testcrafter,
 Product Locator, ScreenTracker, Nexus Remote Center) are all
 web/backend/QA-automation work that *uses* AI APIs as a black box. None of
 them demonstrate understanding of how a neural network actually learns
@@ -62,15 +61,14 @@ whose outcome is still pending.
   CI job (separate from the regular test job to keep the standard job fast).
 - **Static analysis / formatting:** clang-format + clang-tidy, run in CI.
 - **CI:** GitHub Actions — `build`, `test`, `sanitize`, `lint` jobs.
-- **License:** MIT (standard §9 default).
+- **License:** MIT.
 
-## 4. From-Scratch Justification (standard §0.4 exception)
+## 4. From-Scratch Justification
 
 This is explicitly a learning/portfolio project — the whole point is writing
 the autograd graph and backprop by hand rather than depending on an existing
-library (e.g. libtorch, dlib). This exception and its reasoning goes in
-`README.md` §Why per §0.4's requirement that the rationale be written down,
-not just implied.
+library (e.g. libtorch, dlib). This rationale goes in `README.md` §Why so
+it's written down, not just implied.
 
 ## 5. Architecture
 
@@ -130,7 +128,8 @@ mechanism. `MLP` chains `Linear` + activation layers. `SGD::step()` reads
 - Internal invariant violations (e.g. a `TensorImpl` with mismatched
   `data`/`grad` buffer sizes) use `assert()` — these should never happen if
   the library is internally correct, so a crash in debug builds is
-  appropriate rather than a recoverable exception.
+  appropriate rather than a recoverable exception (a real bug should never
+  be silently masked by an exception handler).
 
 ## 8. Testing Strategy
 
@@ -146,8 +145,7 @@ mechanism. `MLP` chains `Linear` + activation layers. `SGD::step()` reads
   pipeline — graph construction, backward, optimizer — works end to end,
   not just individual operators in isolation).
 - **Sanitizer job:** the full test suite re-run under ASan+UBSan in CI.
-- Per standard §6: every behavior change ships with a test; no separate
-  "add tests later" pass.
+- Every behavior change ships with a test; no separate "add tests later" pass.
 
 ## 9. Extensibility (documented, not built in v1)
 
@@ -168,3 +166,20 @@ project reads as an actively extensible base, not a closed one-off exercise.
 - Any GPU support.
 - Any tokenizer/LLM-adjacent functionality — that's a separate candidate
   project (mini LLM inference), not part of gradus.
+
+## 11. Documentation Set (v1)
+
+- `README.md` — template per the personal software standards note, incl.
+  §Why with the from-scratch justification (§4 above).
+- `CLAUDE.md` — architecture decisions, "why", run commands. Kept lean
+  (under ~100 lines); anything longer lives in `docs/`.
+- `HANDOFF.md` — AI hand-off file at repo root, updated after every
+  meaningful step (commit/completed task), committed to git.
+- `docs/architecture.md` — includes a Mermaid diagram of the
+  Tensor → operator → backward() data flow (§6 above), plus the decisions
+  log (unified Tensor vs. separate Value/Tensor, etc.).
+- `CONTRIBUTING.md` — included in v1 since this is a public/portfolio repo,
+  not a private one; covers how to build, run tests, and the TDD-first
+  workflow contributors are expected to follow.
+- `LICENSE` — MIT.
+- No `.env.example` — the library has no secrets or runtime config.
