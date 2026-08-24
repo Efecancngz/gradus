@@ -33,6 +33,9 @@ public:
 
     void backward();
     void zero_grad();
+
+    Tensor operator+(const Tensor& other) const;
+    Tensor operator-(const Tensor& other) const;
 };
 
 }  // namespace gradus
