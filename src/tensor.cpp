@@ -1,6 +1,7 @@
 #include "gradus/tensor.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <stdexcept>
 #include <unordered_set>
 
@@ -198,6 +199,47 @@ Tensor Tensor::matmul(const Tensor& other) const {
                 }
                 rhs->grad[p * n + j] += grad_sum;
             }
+        }
+    };
+
+    return Tensor(out_impl);
+}
+
+Tensor Tensor::tanh() const {
+    std::vector<double> result_data(size());
+    for (size_t i = 0; i < size(); ++i) {
+        result_data[i] = std::tanh(impl->data[i]);
+    }
+
+    auto out_impl = std::make_shared<TensorImpl>(result_data, impl->shape);
+    out_impl->parents = {impl};
+
+    auto input = impl;
+    TensorImpl* out_raw = out_impl.get();
+    out_impl->backward_fn = [input, out_raw]() {
+        for (size_t i = 0; i < input->data.size(); ++i) {
+            double t = out_raw->data[i];
+            input->grad[i] += (1.0 - t * t) * out_raw->grad[i];
+        }
+    };
+
+    return Tensor(out_impl);
+}
+
+Tensor Tensor::relu() const {
+    std::vector<double> result_data(size());
+    for (size_t i = 0; i < size(); ++i) {
+        result_data[i] = impl->data[i] > 0.0 ? impl->data[i] : 0.0;
+    }
+
+    auto out_impl = std::make_shared<TensorImpl>(result_data, impl->shape);
+    out_impl->parents = {impl};
+
+    auto input = impl;
+    TensorImpl* out_raw = out_impl.get();
+    out_impl->backward_fn = [input, out_raw]() {
+        for (size_t i = 0; i < input->data.size(); ++i) {
+            input->grad[i] += (input->data[i] > 0.0 ? 1.0 : 0.0) * out_raw->grad[i];
         }
     };
 

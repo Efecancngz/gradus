@@ -1,3 +1,4 @@
+#include <cmath>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include "gradient_check.hpp"
@@ -123,4 +124,39 @@ TEST_CASE("matmul throws on inner dimension mismatch") {
     Tensor a({1.0, 2.0}, {1, 2});
     Tensor b({1.0, 2.0, 3.0}, {3, 1});
     REQUIRE_THROWS_AS(a.matmul(b), std::invalid_argument);
+}
+
+TEST_CASE("tanh forward matches std::tanh") {
+    Tensor a(0.5);
+    Tensor b = a.tanh();
+    REQUIRE(b.item() == Catch::Approx(std::tanh(0.5)));
+}
+
+TEST_CASE("tanh backward matches numerical gradient") {
+    Tensor a(0.5);
+    Tensor b = a.tanh();
+    b.backward();
+
+    auto f = [](const std::vector<double>& x) { return std::tanh(x[0]); };
+    auto numgrad = numerical_gradient(f, {0.5});
+
+    REQUIRE(a.grad()[0] == Catch::Approx(numgrad[0]).epsilon(1e-4));
+}
+
+TEST_CASE("relu forward zeroes negative inputs") {
+    Tensor a({-2.0, 3.0}, {2});
+    Tensor b = a.relu();
+    REQUIRE(b.data()[0] == Catch::Approx(0.0));
+    REQUIRE(b.data()[1] == Catch::Approx(3.0));
+}
+
+TEST_CASE("relu backward matches numerical gradient at a positive input") {
+    Tensor a(2.0);
+    Tensor b = a.relu();
+    b.backward();
+
+    auto f = [](const std::vector<double>& x) { return x[0] > 0.0 ? x[0] : 0.0; };
+    auto numgrad = numerical_gradient(f, {2.0});
+
+    REQUIRE(a.grad()[0] == Catch::Approx(numgrad[0]).epsilon(1e-4));
 }
