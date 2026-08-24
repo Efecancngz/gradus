@@ -51,3 +51,29 @@ TEST_CASE("operator- backward matches numerical gradient") {
     REQUIRE(a.grad()[0] == Catch::Approx(numgrad[0]).epsilon(1e-4));
     REQUIRE(b.grad()[0] == Catch::Approx(numgrad[1]).epsilon(1e-4));
 }
+
+TEST_CASE("operator* forward computes the elementwise product") {
+    Tensor a(4.0);
+    Tensor b(5.0);
+    Tensor c = a * b;
+    REQUIRE(c.item() == Catch::Approx(20.0));
+}
+
+TEST_CASE("operator* backward matches numerical gradient") {
+    Tensor a(4.0);
+    Tensor b(5.0);
+    Tensor c = a * b;
+    c.backward();
+
+    auto f2 = [](const std::vector<double>& x) { return x[0] * x[1]; };
+    auto numgrad2 = numerical_gradient(f2, {4.0, 5.0});
+
+    REQUIRE(a.grad()[0] == Catch::Approx(numgrad2[0]).epsilon(1e-4));
+    REQUIRE(b.grad()[0] == Catch::Approx(numgrad2[1]).epsilon(1e-4));
+}
+
+TEST_CASE("operator* throws on shape mismatch") {
+    Tensor a({1.0, 2.0}, {2});
+    Tensor b({1.0, 2.0, 3.0}, {3});
+    REQUIRE_THROWS_AS(a * b, std::invalid_argument);
+}

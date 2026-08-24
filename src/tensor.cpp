@@ -125,4 +125,29 @@ Tensor Tensor::operator-(const Tensor& other) const {
     return Tensor(out_impl);
 }
 
+Tensor Tensor::operator*(const Tensor& other) const {
+    if (impl->shape != other.impl->shape) {
+        throw std::invalid_argument("shape mismatch in operator*");
+    }
+    std::vector<double> result_data(size());
+    for (size_t i = 0; i < size(); ++i) {
+        result_data[i] = impl->data[i] * other.impl->data[i];
+    }
+
+    auto out_impl = std::make_shared<TensorImpl>(result_data, impl->shape);
+    out_impl->parents = {impl, other.impl};
+
+    auto lhs = impl;
+    auto rhs = other.impl;
+    TensorImpl* out_raw = out_impl.get();
+    out_impl->backward_fn = [lhs, rhs, out_raw]() {
+        for (size_t i = 0; i < lhs->data.size(); ++i) {
+            lhs->grad[i] += rhs->data[i] * out_raw->grad[i];
+            rhs->grad[i] += lhs->data[i] * out_raw->grad[i];
+        }
+    };
+
+    return Tensor(out_impl);
+}
+
 }  // namespace gradus
