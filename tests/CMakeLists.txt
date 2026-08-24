@@ -4,6 +4,7 @@ add_executable(gradus_tests
   test_tensor_ops.cpp
   test_autograd.cpp
   test_nn.cpp
+  test_optim.cpp
 )
 target_link_libraries(gradus_tests PRIVATE gradus Catch2::Catch2WithMain)
 
