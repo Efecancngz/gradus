@@ -37,3 +37,27 @@ TEST_CASE("MLP forward produces the final layer's shape and is differentiable") 
     }
     REQUIRE(any_param_has_nonzero_grad);
 }
+
+TEST_CASE("MLP with activate_output=true (default) bounds its output via tanh") {
+    MLP mlp(2, {4, 1});  // default: activate_output = true
+    Tensor x({0.5, -0.5}, {1, 2});
+    Tensor y = mlp.forward(x);
+    REQUIRE(y.item() > -1.0);
+    REQUIRE(y.item() < 1.0);
+}
+
+TEST_CASE("MLP with activate_output=false emits raw, unbounded logits") {
+    MLP mlp(2, {4, 3}, /*activate_output=*/false);
+    Tensor x({0.5, -0.5}, {1, 2});
+    Tensor y = mlp.forward(x);
+    REQUIRE(y.shape() == std::vector<size_t>{1, 3});
+
+    y.sum().backward();
+    bool any_param_has_nonzero_grad = false;
+    for (auto& p : mlp.parameters()) {
+        for (double g : p.grad()) {
+            if (g != 0.0) any_param_has_nonzero_grad = true;
+        }
+    }
+    REQUIRE(any_param_has_nonzero_grad);
+}

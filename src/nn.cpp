@@ -38,7 +38,8 @@ std::vector<Tensor> Linear::parameters() const {
     return {weight, bias};
 }
 
-MLP::MLP(size_t in_features, std::vector<size_t> layer_sizes) {
+MLP::MLP(size_t in_features, std::vector<size_t> layer_sizes, bool activate_output)
+    : activate_output_(activate_output) {
     size_t prev = in_features;
     for (size_t sz : layer_sizes) {
         layers_.emplace_back(prev, sz);
@@ -48,8 +49,12 @@ MLP::MLP(size_t in_features, std::vector<size_t> layer_sizes) {
 
 Tensor MLP::forward(const Tensor& x) const {
     Tensor out = x;
-    for (const auto& layer : layers_) {
-        out = layer.forward(out).tanh();
+    for (size_t i = 0; i < layers_.size(); ++i) {
+        out = layers_[i].forward(out);
+        bool is_last_layer = (i == layers_.size() - 1);
+        if (!is_last_layer || activate_output_) {
+            out = out.tanh();
+        }
     }
     return out;
 }

@@ -18,13 +18,14 @@ public:
 
 class MLP {
 public:
-    MLP(size_t in_features, std::vector<size_t> layer_sizes);
+    MLP(size_t in_features, std::vector<size_t> layer_sizes, bool activate_output = true);
 
     Tensor forward(const Tensor& x) const;
     std::vector<Tensor> parameters() const;
 
 private:
     std::vector<Linear> layers_;
+    bool activate_output_;
 };
 
 }  // namespace gradus
