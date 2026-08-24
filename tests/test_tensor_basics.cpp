@@ -1,5 +1,6 @@
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+
 #include "gradus/tensor.hpp"
 
 TEST_CASE("scalar constructor produces a size-1 tensor") {

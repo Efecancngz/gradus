@@ -1,6 +1,7 @@
-#include <cmath>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <cmath>
+
 #include "gradient_check.hpp"
 #include "gradus/tensor.hpp"
 
@@ -9,8 +10,8 @@ using gradus::testutil::numerical_gradient;
 
 TEST_CASE("backward accumulates gradient across a diamond graph (a used twice)") {
     Tensor a(3.0);
-    Tensor b = a * a;   // b = a^2
-    Tensor c = b + a;   // c = a^2 + a
+    Tensor b = a * a;  // b = a^2
+    Tensor c = b + a;  // c = a^2 + a
     c.backward();
 
     // dc/da = 2a + 1

@@ -9,8 +9,7 @@ namespace gradus::testutil {
 // analytic backward() implementations against a ground truth that doesn't
 // depend on the analytic code being correct.
 inline std::vector<double> numerical_gradient(
-    const std::function<double(const std::vector<double>&)>& f,
-    std::vector<double> x,
+    const std::function<double(const std::vector<double>&)>& f, std::vector<double> x,
     double epsilon = 1e-5) {
     std::vector<double> grad(x.size());
     for (size_t i = 0; i < x.size(); ++i) {

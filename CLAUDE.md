@@ -12,9 +12,10 @@ original design spec.
 
 ## Local toolchain note
 No system-wide compiler was preinstalled when this project started; built
-with MSYS2's `mingw-w64-x86_64-gcc`/`cmake`/`ninja` (installed to
-`C:\msys64\mingw64\bin`, not on PATH by default — add it to PATH or pass
-full paths). Any C++17 compiler works; this is just what's on this machine.
+with MSYS2's `mingw-w64-x86_64-gcc`/`cmake`/`ninja`/`clang-tools-extra`
+(installed to `C:\msys64\mingw64\bin`, now on the permanent user PATH).
+Any C++17 compiler works; this is just what's on this machine. Format
+check locally: `find include src tests examples benchmarks -name '*.hpp' -o -name '*.cpp' | xargs clang-format -i`.
 
 ## Why these choices
 - Single unified `Tensor` type (no separate scalar `Value` class) — avoids

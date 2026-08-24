@@ -20,6 +20,7 @@ add_library(gradus
   src/tensor.cpp
   src/nn.cpp
   src/optim.cpp
+  src/mnist_loader.cpp
 )
 target_include_directories(gradus PUBLIC include)
 
@@ -33,6 +34,9 @@ add_subdirectory(tests)
 
 add_executable(xor_example examples/xor.cpp)
 target_link_libraries(xor_example PRIVATE gradus)
+
+add_executable(mnist_example examples/mnist.cpp)
+target_link_libraries(mnist_example PRIVATE gradus)
 
 if(GRADUS_BUILD_BENCHMARKS)
   FetchContent_Declare(

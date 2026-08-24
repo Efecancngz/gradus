@@ -7,3 +7,4 @@ build-*/
 CMakeFiles/
 CMakeCache.txt
 mcp.json
+data/

@@ -18,7 +18,7 @@ struct TensorImpl {
 };
 
 class Tensor {
-public:
+  public:
     std::shared_ptr<TensorImpl> impl;
 
     explicit Tensor(double value);
@@ -41,6 +41,7 @@ public:
     Tensor tanh() const;
     Tensor relu() const;
     Tensor sum() const;
+    Tensor softmax_cross_entropy_loss(int target_class) const;
 };
 
 }  // namespace gradus

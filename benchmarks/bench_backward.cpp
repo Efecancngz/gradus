@@ -1,4 +1,5 @@
 #include <benchmark/benchmark.h>
+
 #include "gradus/nn.hpp"
 #include "gradus/optim.hpp"
 

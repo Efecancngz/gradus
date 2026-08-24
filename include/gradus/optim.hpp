@@ -1,18 +1,19 @@
 #pragma once
 
 #include <vector>
+
 #include "gradus/tensor.hpp"
 
 namespace gradus {
 
 class SGD {
-public:
+  public:
     SGD(std::vector<Tensor> parameters, double learning_rate);
 
     void step();
     void zero_grad();
 
-private:
+  private:
     std::vector<Tensor> parameters_;
     double learning_rate_;
 };
