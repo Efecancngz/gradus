@@ -18,6 +18,7 @@ FetchContent_MakeAvailable(catch2)
 
 add_library(gradus
   src/tensor.cpp
+  src/nn.cpp
 )
 target_include_directories(gradus PUBLIC include)
 
