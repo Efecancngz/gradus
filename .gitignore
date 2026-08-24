@@ -6,3 +6,4 @@ build-*/
 *.o
 CMakeFiles/
 CMakeCache.txt
+mcp.json
