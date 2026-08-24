@@ -9,22 +9,24 @@ uçtan uca çalıştırıldı — **%89.5 test doğruluğu** (8950/10000), epoch
 başına ~43 saniye (5 epoch, toplam ~215s eğitim), Release build, MSYS2
 GCC 16.2.0. Sonuçlar bu makinede gerçekten ölçüldü, tahmini değil.
 
+PR #1 açıldı (`feat/v2-mnist-classifier` → `main`). CI sonuçları:
+**build-and-test ✅, sanitize ✅ (ilk kez gerçekten doğrulandı — Ubuntu'da
+ASan/UBSan sorunsuz çalışıyor), format-check** ilk seferinde başarısız oldu
+(hiç `clang-format` çalıştırılmamıştı) — MSYS2'ye `clang-tools-extra`
+kurulup (`mingw-w64-x86_64-clang-tools-extra`, clang-format 22.1.8) tüm
+kaynak formatlandı, ikinci push'ta düzeldi.
+
 v1 çekirdeği (Tensor/autograd motoru, Linear/MLP, SGD, XOR örneği) ayrıca
 tamamlanmış ve doğrulanmış durumda (bkz. eski handoff notları, alt bölüm).
 
 ## Sıradaki somut adım
-`feat/v2-mnist-classifier` branch'i henüz `main`'e merge edilmedi — testler
-yeşil (45/45 unit test), MNIST demo doğrulandı. Sırada:
-1. Task 7 dokümantasyonu tamamlanıyor (bu commit'te)
-2. Branch'i main'e merge et (finishing-a-development-branch akışı)
-3. main'i GitHub'a push et
+CI'nin `c721155` (style: apply clang-format) commit'iyle tamamen yeşile
+dönüp dönmediği kontrol edilmeli, sonra PR #1 merge edilebilir.
 
-v1'den kalan açık maddeler hâlâ geçerli: Google Benchmark FetchContent bu
-makinede git clone sırasında takılıyor (build/_deps'ten kaynak kopyalayarak
-atlatılabildi, ama `-DGRADUS_BUILD_BENCHMARKS=ON` hâlâ denenmedi); sanitizer
-build'i MinGW'de link hatası veriyor (CI'nin Ubuntu job'unda çalışması
-bekleniyor, henüz doğrulanmadı — repo'nun GitHub Actions'ı push sonrası
-kontrol edilmeli).
+Google Benchmark hâlâ ayrı bir konu: `-DGRADUS_BUILD_BENCHMARKS=ON` henüz
+gerçekten denenmedi (FetchContent git clone sorunu — aşağıdaki çözüm
+notuyla, `build/_deps/catch2-src` gibi Benchmark için de kaynağı elle
+kopyalayıp denenebilir).
 
 ## Bilinmesi gerekenler
 - **FetchContent git clone bu makinede birden fazla kez takıldı** (MSYS2
@@ -34,9 +36,10 @@ kontrol edilmeli).
   tamamen atlıyor, anında configure oluyor. Yeni bir build dizini açarken
   bunu hatırla.
 - Bu makinede sistem geneli bir C++ derleyicisi yoktu; MSYS2 kuruldu
-  (`C:\msys64`), `mingw-w64-x86_64-gcc/cmake/ninja` paketleri kuruldu ve
-  artık kalıcı olarak kullanıcı PATH'ine eklendi (`C:\msys64\mingw64\bin`)
-  — yeni bir terminal açıldığında elle PATH eklemeye gerek yok.
+  (`C:\msys64`), `mingw-w64-x86_64-gcc/cmake/ninja/clang-tools-extra`
+  paketleri kuruldu ve artık kalıcı olarak kullanıcı PATH'ine eklendi
+  (`C:\msys64\mingw64\bin`) — yeni bir terminal açıldığında elle PATH
+  eklemeye gerek yok. `clang-format` artık yerelde de mevcut ve çalışıyor.
 - `mnist_example.exe`, MinGW derleyicisiyle derlendiği için çalışma
   zamanında `libgcc_s_seh-1.dll`/`libstdc++-6.dll`'e ihtiyaç duyuyor — bu
   DLL'ler `C:\msys64\mingw64\bin` içinde. PATH'e kalıcı eklendiği için artık
@@ -62,6 +65,6 @@ kontrol edilmeli).
 - docs/architecture.md — mimari + kararlar günlüğü (v1+v2)
 
 ## Son 3 commit
+- c721155 style: apply clang-format
+- eec089c docs: document MNIST example and v2 architecture decisions
 - 46124e6 feat: add MNIST training/evaluation example
-- 9a83fd1 chore: add MNIST download script, gitignore data/
-- 89b85ff feat: add MNIST CSV loader with [-1,1] pixel normalization
