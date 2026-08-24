@@ -37,6 +37,7 @@ public:
     Tensor operator+(const Tensor& other) const;
     Tensor operator-(const Tensor& other) const;
     Tensor operator*(const Tensor& other) const;
+    Tensor matmul(const Tensor& other) const;
 };
 
 }  // namespace gradus

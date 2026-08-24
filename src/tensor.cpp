@@ -150,4 +150,58 @@ Tensor Tensor::operator*(const Tensor& other) const {
     return Tensor(out_impl);
 }
 
+Tensor Tensor::matmul(const Tensor& other) const {
+    if (impl->shape.size() != 2 || other.impl->shape.size() != 2) {
+        throw std::invalid_argument("matmul requires 2D tensors");
+    }
+    size_t m = impl->shape[0];
+    size_t k = impl->shape[1];
+    if (other.impl->shape[0] != k) {
+        throw std::invalid_argument("matmul shape mismatch: inner dimensions differ");
+    }
+    size_t n = other.impl->shape[1];
+
+    std::vector<double> result_data(m * n, 0.0);
+    for (size_t i = 0; i < m; ++i) {
+        for (size_t j = 0; j < n; ++j) {
+            double total = 0.0;
+            for (size_t p = 0; p < k; ++p) {
+                total += impl->data[i * k + p] * other.impl->data[p * n + j];
+            }
+            result_data[i * n + j] = total;
+        }
+    }
+
+    auto out_impl = std::make_shared<TensorImpl>(result_data, std::vector<size_t>{m, n});
+    out_impl->parents = {impl, other.impl};
+
+    auto lhs = impl;
+    auto rhs = other.impl;
+    TensorImpl* out_raw = out_impl.get();
+    out_impl->backward_fn = [lhs, rhs, out_raw, m, k, n]() {
+        // dL/dlhs = dL/dout @ rhs^T
+        for (size_t i = 0; i < m; ++i) {
+            for (size_t p = 0; p < k; ++p) {
+                double grad_sum = 0.0;
+                for (size_t j = 0; j < n; ++j) {
+                    grad_sum += out_raw->grad[i * n + j] * rhs->data[p * n + j];
+                }
+                lhs->grad[i * k + p] += grad_sum;
+            }
+        }
+        // dL/drhs = lhs^T @ dL/dout
+        for (size_t p = 0; p < k; ++p) {
+            for (size_t j = 0; j < n; ++j) {
+                double grad_sum = 0.0;
+                for (size_t i = 0; i < m; ++i) {
+                    grad_sum += lhs->data[i * k + p] * out_raw->grad[i * n + j];
+                }
+                rhs->grad[p * n + j] += grad_sum;
+            }
+        }
+    };
+
+    return Tensor(out_impl);
+}
+
 }  // namespace gradus
