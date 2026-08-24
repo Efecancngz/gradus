@@ -266,4 +266,42 @@ Tensor Tensor::sum() const {
     return Tensor(out_impl);
 }
 
+Tensor Tensor::softmax_cross_entropy_loss(int target_class) const {
+    if (impl->shape.size() != 2 || impl->shape[0] != 1) {
+        throw std::invalid_argument("softmax_cross_entropy_loss requires a {1, C} logits tensor");
+    }
+    size_t num_classes = impl->shape[1];
+    if (target_class < 0 || static_cast<size_t>(target_class) >= num_classes) {
+        throw std::invalid_argument("softmax_cross_entropy_loss: target_class out of range");
+    }
+
+    double max_logit = impl->data[0];
+    for (size_t i = 1; i < num_classes; ++i) {
+        max_logit = std::max(max_logit, impl->data[i]);
+    }
+
+    double sum_exp = 0.0;
+    for (size_t i = 0; i < num_classes; ++i) {
+        sum_exp += std::exp(impl->data[i] - max_logit);
+    }
+
+    double log_sum_exp = std::log(sum_exp) + max_logit;
+    double loss_value = log_sum_exp - impl->data[static_cast<size_t>(target_class)];
+
+    auto out_impl = std::make_shared<TensorImpl>(std::vector<double>{loss_value}, std::vector<size_t>{1});
+    out_impl->parents = {impl};
+
+    auto input = impl;
+    TensorImpl* out_raw = out_impl.get();
+    out_impl->backward_fn = [input, out_raw, target_class, max_logit, sum_exp, num_classes]() {
+        for (size_t i = 0; i < num_classes; ++i) {
+            double softmax_i = std::exp(input->data[i] - max_logit) / sum_exp;
+            double indicator = (static_cast<int>(i) == target_class) ? 1.0 : 0.0;
+            input->grad[i] += (softmax_i - indicator) * out_raw->grad[0];
+        }
+    };
+
+    return Tensor(out_impl);
+}
+
 }  // namespace gradus
