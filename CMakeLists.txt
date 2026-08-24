@@ -20,6 +20,7 @@ add_library(gradus
   src/tensor.cpp
   src/nn.cpp
   src/optim.cpp
+  src/mnist_loader.cpp
 )
 target_include_directories(gradus PUBLIC include)
 

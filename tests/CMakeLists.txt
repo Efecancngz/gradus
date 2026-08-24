@@ -7,6 +7,7 @@ add_executable(gradus_tests
   test_optim.cpp
   test_xor_integration.cpp
   test_softmax_cross_entropy.cpp
+  test_mnist_loader.cpp
 )
 target_link_libraries(gradus_tests PRIVATE gradus Catch2::Catch2WithMain)
 
