@@ -30,3 +30,6 @@ endif()
 
 enable_testing()
 add_subdirectory(tests)
+
+add_executable(xor_example examples/xor.cpp)
+target_link_libraries(xor_example PRIVATE gradus)

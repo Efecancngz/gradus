@@ -5,11 +5,20 @@
 
 namespace gradus {
 
+namespace {
+// Every Linear layer gets a distinct-but-deterministic seed: reusing the
+// same seed for every layer left correlated initial weights across layers,
+// which for a small XOR network failed to break symmetry during training
+// (all hidden units stayed functionally identical, so the network could
+// only ever output a constant regardless of input). Incrementing the seed
+// per layer keeps runs fully reproducible while decorrelating layers.
+unsigned int next_linear_seed = 42;
+}  // namespace
+
 Linear::Linear(size_t in_features, size_t out_features)
     : weight(std::vector<double>(in_features * out_features, 0.0), {in_features, out_features}),
       bias(std::vector<double>(out_features, 0.0), {1, out_features}) {
-    // Fixed seed: every training run (and every test) is reproducible.
-    std::mt19937 rng(42);
+    std::mt19937 rng(next_linear_seed++);
     double bound = 1.0 / std::sqrt(static_cast<double>(in_features));
     std::uniform_real_distribution<double> dist(-bound, bound);
 

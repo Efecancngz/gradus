@@ -5,6 +5,7 @@ add_executable(gradus_tests
   test_autograd.cpp
   test_nn.cpp
   test_optim.cpp
+  test_xor_integration.cpp
 )
 target_link_libraries(gradus_tests PRIVATE gradus Catch2::Catch2WithMain)
 
