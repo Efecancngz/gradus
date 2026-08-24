@@ -33,3 +33,16 @@ add_subdirectory(tests)
 
 add_executable(xor_example examples/xor.cpp)
 target_link_libraries(xor_example PRIVATE gradus)
+
+if(GRADUS_BUILD_BENCHMARKS)
+  FetchContent_Declare(
+    googlebenchmark
+    GIT_REPOSITORY https://github.com/google/benchmark.git
+    GIT_TAG v1.8.4
+  )
+  set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+  FetchContent_MakeAvailable(googlebenchmark)
+
+  add_executable(gradus_bench benchmarks/bench_backward.cpp)
+  target_link_libraries(gradus_bench PRIVATE gradus benchmark::benchmark)
+endif()
