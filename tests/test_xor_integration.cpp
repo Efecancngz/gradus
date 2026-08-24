@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+
 #include "gradus/nn.hpp"
 #include "gradus/optim.hpp"
 
@@ -13,9 +14,7 @@ std::vector<std::vector<double>> xor_inputs() {
     return {{-1.0, -1.0}, {-1.0, 1.0}, {1.0, -1.0}, {1.0, 1.0}};
 }
 
-std::vector<double> xor_targets() {
-    return {-1.0, 1.0, 1.0, -1.0};
-}
+std::vector<double> xor_targets() { return {-1.0, 1.0, 1.0, -1.0}; }
 
 double average_loss(const MLP& mlp) {
     auto inputs = xor_inputs();

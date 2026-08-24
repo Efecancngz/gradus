@@ -1,12 +1,12 @@
 #include <iostream>
+
 #include "gradus/nn.hpp"
 #include "gradus/optim.hpp"
 
 int main() {
     using namespace gradus;
 
-    std::vector<std::vector<double>> inputs = {
-        {-1.0, -1.0}, {-1.0, 1.0}, {1.0, -1.0}, {1.0, 1.0}};
+    std::vector<std::vector<double>> inputs = {{-1.0, -1.0}, {-1.0, 1.0}, {1.0, -1.0}, {1.0, 1.0}};
     std::vector<double> targets = {-1.0, 1.0, 1.0, -1.0};
 
     MLP mlp(2, {4, 1});
@@ -36,8 +36,8 @@ int main() {
     for (size_t i = 0; i < inputs.size(); ++i) {
         Tensor x(inputs[i], {1, 2});
         Tensor pred = mlp.forward(x);
-        std::cout << inputs[i][0] << " XOR " << inputs[i][1]
-                  << "  ->  " << pred.item() << "  (target " << targets[i] << ")\n";
+        std::cout << inputs[i][0] << " XOR " << inputs[i][1] << "  ->  " << pred.item()
+                  << "  (target " << targets[i] << ")\n";
     }
 
     return 0;

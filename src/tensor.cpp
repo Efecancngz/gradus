@@ -20,21 +20,13 @@ Tensor::Tensor(std::vector<double> data, std::vector<size_t> shape)
 
 Tensor::Tensor(std::shared_ptr<TensorImpl> impl_) : impl(std::move(impl_)) {}
 
-size_t Tensor::size() const {
-    return impl->data.size();
-}
+size_t Tensor::size() const { return impl->data.size(); }
 
-const std::vector<size_t>& Tensor::shape() const {
-    return impl->shape;
-}
+const std::vector<size_t>& Tensor::shape() const { return impl->shape; }
 
-const std::vector<double>& Tensor::data() const {
-    return impl->data;
-}
+const std::vector<double>& Tensor::data() const { return impl->data; }
 
-std::vector<double>& Tensor::grad() {
-    return impl->grad;
-}
+std::vector<double>& Tensor::grad() { return impl->grad; }
 
 double Tensor::item() const {
     if (size() != 1) {
@@ -43,13 +35,12 @@ double Tensor::item() const {
     return impl->data[0];
 }
 
-void Tensor::zero_grad() {
-    std::fill(impl->grad.begin(), impl->grad.end(), 0.0);
-}
+void Tensor::zero_grad() { std::fill(impl->grad.begin(), impl->grad.end(), 0.0); }
 
 void Tensor::backward() {
     if (size() != 1) {
-        throw std::invalid_argument("backward() can only be called on a scalar (single-element) tensor");
+        throw std::invalid_argument(
+            "backward() can only be called on a scalar (single-element) tensor");
     }
 
     std::vector<std::shared_ptr<TensorImpl>> topo;
@@ -252,7 +243,8 @@ Tensor Tensor::sum() const {
         total += v;
     }
 
-    auto out_impl = std::make_shared<TensorImpl>(std::vector<double>{total}, std::vector<size_t>{1});
+    auto out_impl =
+        std::make_shared<TensorImpl>(std::vector<double>{total}, std::vector<size_t>{1});
     out_impl->parents = {impl};
 
     auto input = impl;
@@ -288,7 +280,8 @@ Tensor Tensor::softmax_cross_entropy_loss(int target_class) const {
     double log_sum_exp = std::log(sum_exp) + max_logit;
     double loss_value = log_sum_exp - impl->data[static_cast<size_t>(target_class)];
 
-    auto out_impl = std::make_shared<TensorImpl>(std::vector<double>{loss_value}, std::vector<size_t>{1});
+    auto out_impl =
+        std::make_shared<TensorImpl>(std::vector<double>{loss_value}, std::vector<size_t>{1});
     out_impl->parents = {impl};
 
     auto input = impl;

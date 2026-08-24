@@ -1,7 +1,8 @@
 #include <algorithm>
-#include <cmath>
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
+#include <cmath>
+
 #include "gradient_check.hpp"
 #include "gradus/tensor.hpp"
 
@@ -13,7 +14,8 @@ TEST_CASE("softmax_cross_entropy_loss forward matches the closed-form definition
     Tensor loss = logits.softmax_cross_entropy_loss(0);
 
     double max_logit = 2.0;
-    double sum_exp = std::exp(2.0 - max_logit) + std::exp(1.0 - max_logit) + std::exp(0.1 - max_logit);
+    double sum_exp =
+        std::exp(2.0 - max_logit) + std::exp(1.0 - max_logit) + std::exp(0.1 - max_logit);
     double expected = (std::log(sum_exp) + max_logit) - 2.0;
 
     REQUIRE(loss.item() == Catch::Approx(expected).epsilon(1e-6));
@@ -43,7 +45,8 @@ TEST_CASE("softmax_cross_entropy_loss backward equals softmax minus one-hot") {
     loss.backward();
 
     double max_logit = 3.0;
-    double sum_exp = std::exp(1.0 - max_logit) + std::exp(2.0 - max_logit) + std::exp(3.0 - max_logit);
+    double sum_exp =
+        std::exp(1.0 - max_logit) + std::exp(2.0 - max_logit) + std::exp(3.0 - max_logit);
     double softmax0 = std::exp(1.0 - max_logit) / sum_exp;
     double softmax1 = std::exp(2.0 - max_logit) / sum_exp;
     double softmax2 = std::exp(3.0 - max_logit) / sum_exp;

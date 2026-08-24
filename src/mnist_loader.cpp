@@ -33,10 +33,9 @@ MnistDataset load_mnist_csv(const std::string& path) {
         if (expected_fields == 0) {
             expected_fields = fields.size();
         } else if (fields.size() != expected_fields) {
-            throw std::runtime_error(
-                "load_mnist_csv: row " + std::to_string(line_number) +
-                " has " + std::to_string(fields.size()) + " fields, expected " +
-                std::to_string(expected_fields));
+            throw std::runtime_error("load_mnist_csv: row " + std::to_string(line_number) +
+                                     " has " + std::to_string(fields.size()) +
+                                     " fields, expected " + std::to_string(expected_fields));
         }
 
         dataset.labels.push_back(static_cast<int>(fields[0]));

@@ -30,13 +30,9 @@ Linear::Linear(size_t in_features, size_t out_features)
     }
 }
 
-Tensor Linear::forward(const Tensor& x) const {
-    return x.matmul(weight) + bias;
-}
+Tensor Linear::forward(const Tensor& x) const { return x.matmul(weight) + bias; }
 
-std::vector<Tensor> Linear::parameters() const {
-    return {weight, bias};
-}
+std::vector<Tensor> Linear::parameters() const { return {weight, bias}; }
 
 MLP::MLP(size_t in_features, std::vector<size_t> layer_sizes, bool activate_output)
     : activate_output_(activate_output) {

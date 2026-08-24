@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iostream>
+
 #include "gradus/mnist_loader.hpp"
 #include "gradus/nn.hpp"
 #include "gradus/optim.hpp"
@@ -23,8 +24,8 @@ int main() {
     std::cout << "Loading MNIST (run scripts/download_mnist.sh first if this fails)...\n";
     auto train = load_mnist_csv("data/mnist_train.csv");
     auto test = load_mnist_csv("data/mnist_test.csv");
-    std::cout << "Loaded " << train.images.size() << " train / "
-              << test.images.size() << " test examples.\n";
+    std::cout << "Loaded " << train.images.size() << " train / " << test.images.size()
+              << " test examples.\n";
 
     MLP mlp(784, {128, 10}, /*activate_output=*/false);
     SGD optimizer(mlp.parameters(), 0.01);
@@ -47,8 +48,7 @@ int main() {
         }
 
         auto epoch_seconds = std::chrono::duration<double>(Clock::now() - epoch_start).count();
-        std::cout << "epoch " << epoch
-                  << "  avg loss " << (total_loss / train.images.size())
+        std::cout << "epoch " << epoch << "  avg loss " << (total_loss / train.images.size())
                   << "  (" << epoch_seconds << "s)\n";
     }
 
@@ -61,8 +61,10 @@ int main() {
             ++correct;
         }
     }
-    double accuracy = 100.0 * static_cast<double>(correct) / static_cast<double>(test.images.size());
-    std::cout << "Test accuracy: " << accuracy << "% (" << correct << "/" << test.images.size() << ")\n";
+    double accuracy =
+        100.0 * static_cast<double>(correct) / static_cast<double>(test.images.size());
+    std::cout << "Test accuracy: " << accuracy << "% (" << correct << "/" << test.images.size()
+              << ")\n";
 
     return 0;
 }

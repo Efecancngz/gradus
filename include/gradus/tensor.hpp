@@ -18,7 +18,7 @@ struct TensorImpl {
 };
 
 class Tensor {
-public:
+  public:
     std::shared_ptr<TensorImpl> impl;
 
     explicit Tensor(double value);
