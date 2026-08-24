@@ -56,6 +56,22 @@ cmake --build build-release --parallel
 ./build-release/mnist_example
 ```
 
+## Benchmark
+Backward-pass throughput on a small (2→4→1) MLP, measured with Google
+Benchmark in a Release build on this machine:
+
+```
+BM_MLPForwardBackward   4438 ns   4395 ns CPU   160000 iterations
+```
+
+~225k full forward+backward passes/second for this network size. Run it
+yourself:
+```bash
+cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release -DGRADUS_BUILD_BENCHMARKS=ON
+cmake --build build-release --parallel
+./build-release/gradus_bench
+```
+
 ## Documentation
 - [Architecture](docs/architecture.md)
 

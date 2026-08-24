@@ -73,3 +73,10 @@ the loss all the way back to the original leaf tensors.
   epochs on the full 60k-image training set, ~43s/epoch in a Release
   build on this machine — a real, run-once-and-confirmed number, not an
   estimate.
+- **`BENCHMARK_ENABLE_WERROR OFF` for the Google Benchmark dependency.**
+  Upstream's own `sysinfo.cc` has an unhandled-enum `-Wswitch` warning on
+  this GCC/MinGW version; with the library's default `-Werror` that turns
+  into a build failure in code this project doesn't own. Disabling
+  `-Werror` for that one dependency (not for `gradus` itself) is the
+  correct fix — patching or silencing warnings in vendored third-party
+  source isn't this project's job.

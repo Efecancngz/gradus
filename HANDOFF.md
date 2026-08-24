@@ -3,30 +3,34 @@
 Son güncelleme: 2026-08-24, güncelleyen: Claude Sonnet 5
 
 ## Şu an ne yapılıyor
-v2 tamamlandı: fused `softmax_cross_entropy_loss`, `MLP::activate_output`,
-MNIST CSV loader, `examples/mnist.cpp`. Tam 60k eğitim / 10k test verisiyle
-uçtan uca çalıştırıldı — **%89.5 test doğruluğu** (8950/10000), epoch
-başına ~43 saniye (5 epoch, toplam ~215s eğitim), Release build, MSYS2
-GCC 16.2.0. Sonuçlar bu makinede gerçekten ölçüldü, tahmini değil.
+v1 + v2 tamamlandı, PR #1 merge edildi, `main` GitHub'da güncel. README'ye
+proje amacının portföy/öğrenme olduğu ve RNG bug hikayesi eklendi. Google
+Benchmark de artık gerçekten çalıştırıldı ve README'ye eklendi (bu bölümün
+altındaki maddeye bak).
 
-PR #1 açıldı (`feat/v2-mnist-classifier` → `main`). CI sonuçları:
-**build-and-test ✅, sanitize ✅ (ilk kez gerçekten doğrulandı — Ubuntu'da
-ASan/UBSan sorunsuz çalışıyor), format-check** ilk seferinde başarısız oldu
-(hiç `clang-format` çalıştırılmamıştı) — MSYS2'ye `clang-tools-extra`
-kurulup (`mingw-w64-x86_64-clang-tools-extra`, clang-format 22.1.8) tüm
-kaynak formatlandı, ikinci push'ta düzeldi.
+**v2 sonucu:** Tam 60k eğitim / 10k test verisiyle uçtan uca çalıştırıldı —
+**%89.5 test doğruluğu** (8950/10000), epoch başına ~43 saniye (5 epoch,
+toplam ~215s eğitim), Release build, MSYS2 GCC 16.2.0.
 
-v1 çekirdeği (Tensor/autograd motoru, Linear/MLP, SGD, XOR örneği) ayrıca
-tamamlanmış ve doğrulanmış durumda (bkz. eski handoff notları, alt bölüm).
+**CI sonuçları (PR #1):** build-and-test ✅, sanitize ✅ (Ubuntu'da ASan/UBSan
+sorunsuz), format-check ilk seferinde başarısız oldu (hiç `clang-format`
+çalıştırılmamıştı) — `clang-tools-extra` kurulup düzeltildi, ikinci push'ta
+düzeldi.
+
+**Google Benchmark (bu oturumda tamamlandı):** `-DGRADUS_BUILD_BENCHMARKS=ON`
+ile Release build'de gerçekten çalıştırıldı. İki sorun çıktı, ikisi de
+çözüldü: (1) Google Benchmark'ın kendi `sysinfo.cc`'si bu GCC sürümünde bir
+uyarıyı hataya çeviriyordu (`-Werror`, kendi kütüphanesinin sorunu) —
+`BENCHMARK_ENABLE_WERROR OFF` ile kapatıldı (`CMakeLists.txt`). (2) İlk
+configure'da `-DGRADUS_BUILD_BENCHMARKS=ON` cache'e neden yansımadıysa
+(muhtemelen bir önceki OFF cache'i normal `-D` ile ezilmedi), `:BOOL=ON`
+tip belirterek zorlamak işe yaradı. Sonuç: **4438 ns / forward+backward**
+(2→4→1 MLP, Release, ~225k iterasyon/saniye) — README'ye eklendi.
 
 ## Sıradaki somut adım
-CI'nin `c721155` (style: apply clang-format) commit'iyle tamamen yeşile
-dönüp dönmediği kontrol edilmeli, sonra PR #1 merge edilebilir.
-
-Google Benchmark hâlâ ayrı bir konu: `-DGRADUS_BUILD_BENCHMARKS=ON` henüz
-gerçekten denenmedi (FetchContent git clone sorunu — aşağıdaki çözüm
-notuyla, `build/_deps/catch2-src` gibi Benchmark için de kaynağı elle
-kopyalayıp denenebilir).
+Açık bir görev kalmadı — v1, v2 ve Google Benchmark tamamlandı, hepsi
+`main`'de. Sıradaki adım kullanıcının kararına bağlı (v3 yönü: batching,
+GPU backend, Python binding — henüz seçilmedi).
 
 ## Bilinmesi gerekenler
 - **FetchContent git clone bu makinede birden fazla kez takıldı** (MSYS2

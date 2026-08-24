@@ -45,6 +45,10 @@ if(GRADUS_BUILD_BENCHMARKS)
     GIT_TAG v1.8.4
   )
   set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
+  # Upstream benchmark's own sysinfo.cc has an unhandled-enum warning on
+  # some MinGW/GCC versions; -Werror would turn that into a build failure
+  # in a dependency we don't control. Not our code, not our warning to fix.
+  set(BENCHMARK_ENABLE_WERROR OFF CACHE BOOL "" FORCE)
   FetchContent_MakeAvailable(googlebenchmark)
 
   add_executable(gradus_bench benchmarks/bench_backward.cpp)
