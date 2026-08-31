@@ -35,7 +35,7 @@ C++17 · CMake · Catch2 · Google Benchmark · ASan/UBSan · GitHub Actions
 
 ## Quick start
 ```bash
-git clone <repo-url>
+git clone https://github.com/Efecancngz/gradus.git
 cd gradus
 cmake -S . -B build
 cmake --build build --parallel
